@@ -240,19 +240,188 @@ FROM
 WHERE
     last_name = 'Chen';
 
-SELECT 'hanul' as
-    employee_id,
+SELECT
+    'hanul' AS employee_id,
     last_name,
     hire_date
 FROM
     employees
 WHERE
     hire_date > '05/09/28';
-    
-select *
-from employees
-where last_name = 'King';
 
-select *
-from employees
-where hire_date < '04/01/01';
+SELECT
+    *
+FROM
+    employees
+WHERE
+    last_name = 'King';
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    hire_date < '04/01/01';
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+        department_id = 30
+    AND salary <= 10000
+    AND hire_date < '20050101';
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    department_id = 30
+    OR department_id = 60;
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    department_id IN ( 30, 60 )
+    AND hire_date < '08-01-01';
+    
+--논리조건 연선자
+--범위 조건 연선자 BETWEEN 초기값(이상) AND 마지막값(이하);
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    employee_id BETWEEN 110 AND 120;
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    NOT employee_id BETWEEN 110 AND 120;   
+    
+--between이나 관계연산자로 비교할 수 있는 값은 1. 숫자데이터 2.문자데이터 3.날짜데이터
+
+SELECT
+    *
+FROM
+    v$nls_parameters;
+
+--IN 조건연산자
+--OR 연산자 대신 IN 연산자 ==> 가독성, 간결성
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    department_id IN ( 30, 60 );
+
+--LIKE 연산자
+--컬럼값중 특정 패턴에 속하는 값을 조회할 때 사용하는 문자열 패턴 연산자
+-- % : 여러 개의 문자열을 나타냄
+-- _ : 하나의 문자열을 나타냄
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    first_name LIKE 'K%'; -- K로 시작하는 
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    last_name LIKE '%s'; -- s로 끝나는 
+
+
+--nvarchar2(길이) :  national + varchar2(10) vs varchar2(10)  :   (한국)30byte  vs  (미국)10byte
+--varchar2(길이) : 문자 데이터
+--number(길이) : 정수
+--number(총길이, 소수점이하길이) : 실수 데이터
+--date : 날짜 데이터
+--int 자료형으로 컬럼을 정의하면 ==> 오라클 내부적으로 number로 변경
+--string 자료형으로 컬럼을 정의하면 ==> 오라클 내부적으로 varchar2로 변경
+--빅데이터, 바이너리(=이미지, 오디오, 영상) ==>blob, clob, bfile
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    email LIKE '__B%'; -- 이메일이 __B~인
+    
+--like도 in, between 처음값 AND 마지막값과 같이 not 연산자와 함께 사용할 수 있음
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    NOT phone_number LIKE '6%';
+
+SELECT
+    *
+FROM
+    employees
+WHERE
+    job_id LIKE '%_A%';
+
+
+-- escape 식별자를 사용해 %나 _자체를 하나의 문자로 검색하게 한다
+-- where 컬럼명 '%패턴\_A' ESCAPE '\';
+SELECT
+    *
+FROM
+    employees
+WHERE
+    job_id LIKE '%\_A%' ESCAPE '\';
+
+SELECT
+    *
+FROM
+    locations
+WHERE
+    state_province IS NULL;
+
+SELECT
+    *
+FROM
+    locations
+WHERE
+    state_province IS NOT NULL;
+    
+SELECT
+    *
+FROM
+    employees
+WHERE
+    commission_pct is null;
+    
+SELECT
+    *
+FROM
+    departments
+WHERE
+    department_id = 80;
+    
+SELECT
+    *
+FROM
+    jobs
+WHERE
+    job_id in ('SA_MAN','SA_REP');
+    
+SELECT
+    *
+FROM
+    employees
+WHERE
+    commission_pct is not null;
