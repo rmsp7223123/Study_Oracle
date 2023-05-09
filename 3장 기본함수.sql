@@ -9,11 +9,24 @@
 
 --1. 숫자함수
 --    ABS() : 절대값
+SELECT
+    abs(32),
+    abs(- 32)
+FROM
+    dual;
 --    SIGN() : 부호(음수, 양수, 0)
+SELECT
+    sign(32),
+    sign(- 32),
+    sign(0)
+FROM
+    dual;
 --    ROUND(n [,i]) : 반올림 함수 ..n을 소수점 i번째 자리로 반올림한 결과를 반환하는 함수
-    select (100+90+75)/3 avg1,
-        Round(88.93333333333333) avg2
-    from dual;
+SELECT
+    ( 100 + 90 + 75 ) / 3    avg1,
+    round(88.93333333333333) avg2
+FROM
+    dual;
 
 --2. 문자함수
 --3. 날짜함수
