@@ -66,11 +66,18 @@ SELECT
     hire_date                                             AS 입사년도,
     round(months_between(sysdate, hire_date) / 12)        AS 근무년수,
     to_char(sysdate, 'YYYY') - to_char(hire_date, 'YYYY') AS 근무년수2,
-    case when round(months_between(sysdate, hire_date) / 12) >= 10 and round(months_between(sysdate, hire_date) / 12) < 15 then '10년이상 근속'
-         when round(months_between(sysdate, hire_date) / 12) >= 15 and round(months_between(sysdate, hire_date) / 12) < 20 then '15년이상 근속'
-         when round(months_between(sysdate, hire_date) / 12) >= 20 then '20년이상 근속'
-         else '10년미만'
-    end as 근속상태
+    CASE
+        WHEN round(months_between(sysdate, hire_date) / 12) >= 10
+             AND round(months_between(sysdate, hire_date) / 12) < 15 THEN
+            '10년이상 근속'
+        WHEN round(months_between(sysdate, hire_date) / 12) >= 15
+             AND round(months_between(sysdate, hire_date) / 12) < 20 THEN
+            '15년이상 근속'
+        WHEN round(months_between(sysdate, hire_date) / 12) >= 20 THEN
+            '20년이상 근속'
+        ELSE
+            '10년미만'
+    END                                                   AS 근속상태
 FROM
     employees
 ORDER BY
