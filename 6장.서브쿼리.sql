@@ -165,20 +165,76 @@ WHERE   department_id IN (50, 80);
 
 [예제6-5] 부서(위치코드, location_id)가 영국(UK)인 부서코드, 위치코드, 부서명 정보를 조회한다.
 -- 1. 영국의 위치코드를 조회
-SELECT  location_id
-FROM    locations
-WHERE   country_id = 'UK'; -- 2400, 2500, 2600 : 영국에 부서 여러개~
+SELECT
+    location_id
+FROM
+    locations
+WHERE
+    country_id = 'UK'; -- 2400, 2500, 2600 : 영국에 부서 여러개~
 
 -- 2. 서브쿼리
-SELECT  department_id, location_id, department_name
-FROM    departments
+SELECT
+    department_id,
+    location_id,
+    department_name
+FROM
+    departments
 --WHERE   location_id = (2400, 2500, 2600); 
-WHERE   location_id = 2400
-OR      location_id = 2500
-OR      location_id = 2600
+WHERE
+    location_id = 2400
+    OR location_id = 2500
+       OR location_id = 2600;
 -- WHERE    location_id IN (2400, 2500, 2600)
 -- ORA-01797: 연산자의 뒤에 ANY 또는 ALL을 지정해 주십시오  ==> = ANY () 나 = ALL () 형태로 작성
 -- 01797. 00000 -  "this operator must be followed by ANY or ALL"
+
+
+-- 6.2.2 ANY(=SOME) 연산자
+SELECT
+    *
+FROM
+    departments
+WHERE
+    location_id = ANY ( 2400,
+                        2500,
+                        2600 );
+
+SELECT
+    department_id,
+    salary
+FROM
+    employees
+WHERE
+    department_id = 70;
+
+SELECT
+    department_id,
+    COUNT(*) AS cnt
+FROM
+    employees
+GROUP BY
+    department_id
+ORDER BY
+    2 DESC;
+
+SELECT
+    employee_id,
+    first_name,
+    department_id,
+    salary
+FROM
+    employees
+WHERE
+    salary > ANY (
+        SELECT
+            salary
+        FROM
+            employees
+        WHERE
+            department_id = 80
+    )
+ORDER BY
+    4 DESC;
 
 
 -- 6.2.2 NOT 연산자
