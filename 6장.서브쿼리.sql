@@ -231,11 +231,29 @@ WHERE
         FROM
             employees
         WHERE
-            department_id = 80
+            department_id = 50
     )
 ORDER BY
     4 DESC;
 
+SELECT
+    employee_id,
+    first_name,
+    department_id,
+    salary
+FROM
+    employees
+WHERE
+    salary < ANY (
+        SELECT
+            MAX(salary)
+        FROM
+            employees
+        WHERE
+            department_id = 50
+    )
+ORDER BY
+    4;
 
 -- 6.2.2 NOT 연산자
 -- 6.2.3 ANY(=SOME) 연산자
