@@ -223,6 +223,15 @@ INSERT INTO month_salary2 ( dept_id )
     GROUP BY
         department_id;
 
+DROP TABLE month_salary2;
+
+SELECT
+    *
+FROM
+    month_salary2;
+
+COMMIT;
+
 UPDATE month_salary2 m
 SET
     emp_count = (
@@ -252,4 +261,30 @@ SET
             e.department_id = m.dept_id
     );
 
+COMMIT;
+
+UPDATE month_salary2 m
+SET
+    ( emp_count,
+      sum_sal,
+      avg_sal ) = (
+        SELECT
+            COUNT(employee_id),
+            SUM(salary),
+            AVG(salary)
+        FROM
+            employees e
+        where
+            e.department_id = m.dept_id
+        GROUP BY
+            department_id
+    );
+    
 commit;
+
+--8.3 데이터 삭제 delete
+--테이블 행 데이터를 삭제하는 기본 문법
+--where 절의 조건에 일치하는 행 데이터를 삭제한다
+
+delete from emp where dept_id = 60;
+select * from emp;
