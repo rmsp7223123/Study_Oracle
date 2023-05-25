@@ -509,19 +509,30 @@ WHERE   salary * commission_pct < 1000; -- 1000 달러 미만인자
 
 
 [예제3-32] 
+-- commission_pct : 판매/영업직 종사자만 있고, 나머지 부서원은 NULL
 SELECT employee_id, first_name, salary, commission_pct, hire_date, salary * NVL(commission_pct, 0) AS comm -- 거래 수수료 ==> 부정적인?
 FROM    employees
-WHERE   salary * NVL(commission_pct, 0) < 1000; -- 1000 달러 미만인자~0원 : 78 rows
-
-
+WHERE   salary * NVL(commission_pct, 0) < 1000; -- 1000 달러 미만인자~0원 : 78 rows + 35 + 이상인 ==> 107명
 
 
 
 -- 3.5.2 NVL2(exp1, exp2, exp3) : exp1이 NULL이면 exp3 반환, exp1이 NULL 아니면 exp2를 반환하는 함수
+-- salary와 커미션금액 합한 금액이 '총 급여(TOTAL_SALARY)'
+-- 커미션을 받지 않으면, salary가 '총 급여'
+
+SELECT  employee_id, first_name, salary, salary * NVL(commission_pct, 0) comm,
+        NVL2(commission_pct, salary+salary*commission_pct, salary) AS "TOTAL SALARY"
+FROM    employees;
+
+
+
+
 -- ※ 이름이 같고, 파라미터 갯수가 조금 다름 ==> 쓰임새를 놓고보면 NVL2가 활용도가 높다.
 
 -- NULL이 왜 있을까? ==> 당연히 NULL 이 없어야 하나, 입력하는 과정(=데이터 입력하는 사람)
 -- 데이터 처리 --> 이상치(abnormal), NULL 처리 ==> 데이터 전처리
+
+
 
 -- 3.5.3 COALESCE(exp1, exp2, exp3, ...) : 파라미터 목록에서 첫번째로 NULL이 아닌 exp를 반환하는 함수
 -- 파라미터 목록에 NULL 아닌 값이 하나는 존재해야함 ==> 모두 NULL이면 NULL 반환!!
@@ -529,8 +540,95 @@ WHERE   salary * NVL(commission_pct, 0) < 1000; -- 1000 달러 미만인자~0원 : 78 r
 --    362.7797    NULL   NULL    NULL       NULL
 --    NULL        NULL   NULL    NULL    010-1234-5678
 --   ....
+[예제3-35]
+SELECT  COALESCE('A', 'B', 'C', NULL) first,
+        COALESCE(NULL, 'B', 'C', 'D') second,
+        COALESCE(NULL, NULL, 'C', NULL) third
+FROM    dual;        
+
+---------------------------------------------------------------------
+--------------  집전화1  집전화2  사무실전화  휴대폰  ---------------
+---------------------------------------------------------------------
+SELECT  COALESCE('362-7797', NULL, NULL, NULL) CONTACT1,
+        COALESCE(NULL, '010-1234-5678', NULL, NULL) CONTACT2,
+        COALESCE(NULL, NULL, '362-9988', NULL) CONTACT3
+FROM    dual;        
 
 
+
+
+
+-- 3.6 DECODE와 CASE
+-- 보통 조건에 따른 처리, IF~ELSE  /  SWITCH (case) ..
+-- 오라클에서는 조건에 따른 처리 ==> 함수 DECODE
+-- ※ 오라클PL/SQL (SQL 프로그래밍) 에서는 IF~ELS 있음.
+
+-- 3.6.1 DECODE(exp, search1, result1, search2, result2, .... [,default]) : IF~ELSE 처럼 exp를 검사하여
+-- search1과 일치하면 result1 반환, search2와 일치하면 result2 반환, ... [일치하는게 없으면, 기본값 반환]
+-- 등가비교(=동등비교)
+
+[예제3-36] 보너스 지급에 있어, 20번 부서는 20%   (salary의 20%)
+                               30번 부서는 30%   (salary의 30%)   
+                               40번 부서는 40%   (salary의 40%)
+                               그외 부서는 0(=지급하지 않는다)    전체사원 대상으로 조회한다.
+                               
+SELECT  employee_id, last_name, department_id, salary, 
+        DECODE(department_id, 20, salary * 0.2, 
+                              30, salary * 0.3, 
+                              40, salary * 0.4,
+                              0) AS bonus
+FROM    employees;
+                               
+                               
+
+
+-- 3.6.2 CASE  : 함수라기 보다 더 큰 개념을 가진 표현식이다.
+-- 동등비교뿐만 아니라 더 다양한 비교 연산을 할 수 있다. ex>범위비교 (크다,작다..)
+-- 3.6.2.1 CASE I (동등비교) <---> DECODE와 같은 역할 : 바꿔서 쓸수도?
+/*
+CASE exp WHEN search1 THEN result1
+         WHEN search2 THEN result2
+         ...계속...
+         [ELSE default]
+END         
+*/
+[예제3-37] 보너스 지급에 있어, 20번 부서는 20%   (salary의 20%)
+                               30번 부서는 30%   (salary의 30%)   
+                               40번 부서는 40%   (salary의 40%)
+                               그외 부서는 0(=지급하지 않는다)    전체사원 대상으로 조회한다.
+
+SELECT  employee_id, last_name,department_id, salary,
+        CASE department_id WHEN 20 THEN salary * 0.2
+                           WHEN 30 THEN salary * 0.3
+                           WHEN 40 THEN salary * 0.4
+                           ELSE 0
+        END AS bonus
+FROM    employees;            
+        
+-- 3.6.2.2 CASE II (다양한 비교) <---> DECODE는 할수 없는..범위에 따른 비교
+/*
+CASE WHEN condition1 THEN result1
+     WHEN condition2 THEN result2
+         ...계속...
+     [ELSE default]
+END         
+*/
+
+보너스 지급에 있어서 30번 미만 부서는 급여의 10%를 보너스로 지급,
+                     30번부터 50번 부서까지는 급여의 20%를 보너스로 지급,
+                     60번부터 80번 부서까지는 급여의 30%를 보너스로 지급하고,
+                     그 외의 부서는 40%를 지급한다고 할때,
+
+CASE 표현식을 이용해, 전 사원의 정보와 보너스 금액을 조회하시오.
+
+SELECT  employee_id, last_name,department_id, salary,
+        CASE WHEN department_id < 30 THEN salary * 0.1
+             WHEN department_id BETWEEN 30 AND 50 THEN salary * 0.2
+             WHEN department_id BETWEEN 60 AND 80 THEN salary * 0.3
+             ELSE ROUND(salary * 0.4)
+        END AS bonus
+FROM    employees;
+                     
 
 
 

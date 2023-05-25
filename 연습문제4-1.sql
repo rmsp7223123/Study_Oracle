@@ -1,5 +1,12 @@
-desc employees;
+[연습문제4-1]
 
-select distinct manager_id
-from employees
-where manager_id is not null;
+1. 사원 테이블에서 이 회사의 매니저들을 조회하시오
+-- manager_id : 사원중 매니저에 해당하는 사원의 사번(=employee_id)
+-- employee_id
+DESC employees;
+
+SELECT DISTINCT manager_id
+FROM    employees
+WHERE   manager_id IS NOT NULL; -- 18명 
+
+-- 매니저가 없는 사원 ==> BOSS (대표자) 1명

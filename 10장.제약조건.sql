@@ -84,7 +84,7 @@ SELECT *
 FROM   user_constraints
 WHERE   table_name = 'EMPLOYEES'; -- ¾î?
 
--- COMMIT;
+ COMMIT;
 
 
 
